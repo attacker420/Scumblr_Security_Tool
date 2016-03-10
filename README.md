@@ -266,7 +266,7 @@ http://pastebin.com/pro
 
 
 # MISC
-- uncomment User-Agent and Disallow lines
+- To ban all spiders from the entire site uncomment the User-Agent and Disallow lines
 
 $ vi /Scumblr/public/robots.txt
 
