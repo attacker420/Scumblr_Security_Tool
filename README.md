@@ -1,6 +1,6 @@
 # Deploying Scumblr as a Security Tool
 
-This repo contains everything you need to deploy an instance of Scumblr (https://github.com/Netflix/Scumblr) to monitor for potentially malicious cyber activity. Scumblr is a Netflix open source project that allows performing periodic searches and storing / taking actions on the identified results.  I have made a few changes and added some useful Search Providers. More on that further down.  The origional setup documentation can be found here: (https://github.com/Netflix/Scumblr/wiki)
+This repo contains everything you need to deploy an instance of Scumblr https://github.com/Netflix/Scumblr to monitor for potentially malicious cyber activity. Scumblr is a Netflix open source project that allows performing periodic searches and storing / taking actions on the identified results.  I have made a few changes and added some useful Search Providers. More on that further down.  The origional setup documentation can be found here: https://github.com/Netflix/Scumblr/wiki
 
 # Table of Contents
 
@@ -53,7 +53,7 @@ This repo contains everything you need to deploy an instance of Scumblr (https:/
 - install Openssh-server if not already installed
 	- $ sudo apt-get install openssh-server 
 - Harden your Server if you have not already done so. Good instructions here:
-(http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers)
+http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers
 	- $ sudo apt-get update
 	- $ sudo apt-get -y install git libxslt-dev libxml2-dev build-essential bison openssl zlib1g libxslt1.1 libssl-dev libxslt1-dev libxml2 libffi-dev libxslt-dev libpq-dev autoconf libc6-dev libreadline6-dev zlib1g-dev libtool libsqlite3-dev libcurl3 libmagickcore-dev ruby-build libmagickwand-dev imagemagick bundler
 
@@ -157,7 +157,7 @@ To run rake commands as root (not required):
 # Configuring Search Providers
 Copy this repo's custom search providers into Scumblr's lib directory. The instructions below will guide you through building the necessary APIs for each search provider. 
 
-- $ git clone https://<insert my search providers link>
+- $ git clone https://github.com/nkleck/Scumblr_Security_Tool.git
 
 - $ mv search\ providers/ /Scumblr/lib/ 
 
@@ -172,7 +172,7 @@ Add keys and uncomment ones in use
 
 ### Google Custom Search Providers
 ##### Build your project and get API keys
-- Go to: (https://console.developers.google.com/project)
+- Go to: https://console.developers.google.com/project
 - Under "Select a project" click "Create a project.."
 	- Give you project a name ie: 'scumblr-google-search'
 - Click 'Enable and manage APIs'
@@ -185,7 +185,7 @@ Add keys and uncomment ones in use
 	- Paste the API key into the "config.google_developer_key" field in /Scumblr/config/scumblr.rb
 
 ##### Build your custom search engine
-- Go to: (https://cse.google.com/cse/all)
+- Go to: https://cse.google.com/cse/all
 - Click 'New search engine' on the left
 	- Type in 'www.google.com' in Sites to search
 	- Name your search engine: 'scumblr-google-search'
@@ -210,14 +210,14 @@ Add keys and uncomment ones in use
   	- Click 'Update' and your Google-Based custom searches are complete!
 
 ### Facebook Search Provider
-- Go to: (https://developers.facebook.com/apps)
+- Go to: https://developers.facebook.com/apps
 - Click 'Add a New App' button
 - Copy 'App ID' and 'App Secret' into cooresponding fields in /Scumblr/config/scumblr.rb
 - Facebook Search Provider is configured!
 
 
 ### Twitter Search Provider
-- Go to: (https://dev.twitter.com/apps/new)
+- Go to: https://dev.twitter.com/apps/new
 - Enter Application Name, Description, and Website (use github.com). Leave callback URL blank
 - Accept the TOS
 - Under the Keys and Access Tokens Tab:
@@ -232,8 +232,8 @@ Add keys and uncomment ones in use
 
 ### Pastebin Custom Search Provider
 - The pastebin search provider requires the pastebin pro API account for scraping, acquired here:
-(http://pastebin.com/pro)
-- Then enter the public IP address of your server into this page (http://pastebin.com/api_scraping_faq)
+http://pastebin.com/pro
+- Then enter the public IP address of your server into this page http://pastebin.com/api_scraping_faq
 - The data is scraped from the pastebin site and the query terms are compared in memory on this machine
 
 
@@ -243,7 +243,7 @@ Add keys and uncomment ones in use
 
 
 ### YouTube Search Provider
-- Go to: (https://console.developers.google.com/project)
+- Go to: https://console.developers.google.com/project
 - Under "Select a project" click "Create a project.."
 	- Give you project a name ie: 'youtube-search'
 - Click 'Enable and manage APIs'
