@@ -6,8 +6,8 @@ This repo contains everything you need to deploy an instance of Scumblr https://
 
 <!-- MarkdownTOC depth=3 -->
 
+- Search Providers
 - SETUP
-    - Search Providers
     - Requirements
     - Pre-Installation Items
     - Install Ruby on Rails
