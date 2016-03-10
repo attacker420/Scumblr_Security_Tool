@@ -28,9 +28,6 @@ This repo contains everything you need to deploy an instance of Scumblr https://
 
 <!-- /MarkdownTOC -->
 
-
-# SETUP
-
 ## Search Providers
 
 - 4chan
@@ -46,6 +43,7 @@ This repo contains everything you need to deploy an instance of Scumblr https://
 - Twitter
 - YouTube
 
+# SETUP
 
 ## Requirements
 
