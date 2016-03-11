@@ -8,20 +8,20 @@ This repo contains everything you need to deploy an instance of Scumblr https://
 
 - Search Providers
 - SETUP
-    - Requirements
-    - Pre-Installation Items
-    - Install Ruby on Rails
-    - Install Application Dependencies
-    - Setup Applicaiton
-    - Running Scumblr
+	- Requirements
+	- Pre-Installation Items
+	- Install Ruby on Rails
+	- Install Application Dependencies
+	- Setup Applicaiton
+	- Running Scumblr
 - Automatic Syncing
 - Configuring Search Providers
-    - Google Custom Search Providers
-    - Facebook Search Provider
-    - Twitter Search Provider
-    - Pastebin Custom Search Provider
-    - 4chan and 8ch Custom Search Providers
-    - YouTube Search Provider
+	- Google Custom Search Providers
+	- Facebook Search Provider
+	- Twitter Search Provider
+	- Pastebin Custom Search Provider
+	- 4chan and 8ch Custom Search Providers
+	- YouTube Search Provider
 - Sketchy Integration
 - Slack Integration
 - MISC
@@ -160,7 +160,7 @@ Copy this repo's custom search providers into Scumblr's lib directory. The instr
 - $ mv search\ providers/ /Scumblr/lib/ 
 
 
-In Scumblr/config you will need to edit the scumblr.rb.sample file and add the API keys. I also provided a scumblr.rb file already configured with the onion custom search provider. Just add the API keys. Instructions below!
+In Scumblr/config/initializers/ you will need to edit the scumblr.rb.sample file and add the API keys. I also provided a scumblr.rb file already configured with the onion custom search provider. Just add the API keys. Instructions below!
 
 - $ mv scumblr.rb.sample scumblr.rb
 
@@ -180,7 +180,7 @@ Add keys and uncomment ones in use
 	- Under 'Create Credentials' select 'API key'
 	- Select 'Browser Key', and name it whatever you want
 	- When your API key generates, copy it
-	- Paste the API key into the "config.google_developer_key" field in /Scumblr/config/scumblr.rb
+	- Paste the API key into the "config.google_developer_key" field in /Scumblr/config/initializers/scumblr.rb
 
 ##### Build your custom search engine
 - Go to: https://cse.google.com/cse/all
@@ -189,14 +189,14 @@ Add keys and uncomment ones in use
 	- Name your search engine: 'scumblr-google-search'
 - Under 'Edit search engine', select your search engine, click Setup
 	- Click on 'Search engine ID', copy this text
-	- Paste the ID into "config.google_cx" field in /Scumblr/config/scumblr.rb
+	- Paste the ID into "config.google_cx" field in /Scumblr/config/initializers/scumblr.rb
 	- Click on 'Public URL' and turn off
 	- Enable 'Image Search'
 	- Disable 'Speech Input'
 - Under 'Sites to search', change the box to "Search the entire web but emphasize included sites"
 	- Delete www.google.com from sites if you want, it is unnessary
 	- Click Update
-	- The remaining fields in /Scumblr/config/scumblr.rb are the App name and version = '1.0'
+	- The remaining fields in /Scumblr/config/initializers/scumblr.rb are the App name and version = '1.0'
 	
 #### Search all .onion (TOR) sites custom search
 - Repeat all of the steps above for a new project, API Key, and custom search, with a few changes
@@ -210,7 +210,7 @@ Add keys and uncomment ones in use
 ### Facebook Search Provider
 - Go to: https://developers.facebook.com/apps
 - Click 'Add a New App' button
-- Copy 'App ID' and 'App Secret' into cooresponding fields in /Scumblr/config/scumblr.rb
+- Copy 'App ID' and 'App Secret' into cooresponding fields in /Scumblr/config/initializers/scumblr.rb
 - Facebook Search Provider is configured!
 
 
@@ -219,7 +219,7 @@ Add keys and uncomment ones in use
 - Enter Application Name, Description, and Website (use github.com). Leave callback URL blank
 - Accept the TOS
 - Under the Keys and Access Tokens Tab:
-	- You will generate and copy keys/secrets into the fields in /Scumblr/config/scumblr.rb
+	- You will generate and copy keys/secrets into the fields in /Scumblr/config/initializers/scumblr.rb
 	- Copy Customer Key (API Key) into 'config.twitter_consumer_key'
 	- Copy Customer Secret (API Secret) into 'config.twitter_consumer_secret'
 	- Click 'Generate My Access Token and Token Secret'
@@ -250,8 +250,8 @@ http://pastebin.com/pro
 	- Under 'Create Credentials' select 'API key'
 	- Select 'Browser Key', and name it whatever you want
 	- When your API key generates, copy it
-	- Paste the API key into the "config.youtube_developer_key" field in /Scumblr/config/scumblr.rb
-	- The remaining fields in /Scumblr/config/scumblr.rb are the App name = 'youtube' and version = 'v3'
+	- Paste the API key into the "config.youtube_developer_key" field in /Scumblr/config/initializers/scumblr.rb
+	- The remaining fields in /Scumblr/config/initializers/scumblr.rb are the App name = 'youtube' and version = 'v3'
 - YouTube Search Provider is configured 
 
 
