@@ -141,7 +141,7 @@ To do each function seperately:
 To set up a cron job:
 
 - $ crontab -e
-- 0 \* \* \* \* rake -f /home/<USER>/Scumblr/Rakefile sync_all (no quotes)
+- 0 \* \* \* \* rake -f /home/<USER>/Scumblr/Rakefile sync_all
 
 To run rake commands as root (not required):
 
