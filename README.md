@@ -60,63 +60,66 @@ http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-li
 
 ## Pre-Installation Items
 Install Rbenv/Ruby
-```
-$ cd ~
-$ git clone https://github.com/sstephenson/rbenv.git .rbenv
-$ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-$ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-$ exec $SHELL
+	```
+	$ cd ~
+	$ git clone https://github.com/sstephenson/rbenv.git .rbenv
+	$ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
+	$ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+	$ exec $SHELL
 
-$ git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-$ echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
-$ exec $SHELL
+	$ git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+	$ echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
+	$ exec $SHELL
 
-$ rbenv install 2.0.0-p481
-$ rbenv global 2.0.0-p481
-$ ruby -v
-```
+	$ rbenv install 2.0.0-p481
+	$ rbenv global 2.0.0-p481
+	$ ruby -v
+	```
 
 ## Install Ruby on Rails
-```
-$ gem install bundler --no-ri --no-rdoc
-$ rbenv rehash
-$ gem install rails -v 4.0.9 
-```
+	```
+	$ gem install bundler --no-ri --no-rdoc
+	$ rbenv rehash
+	$ gem install rails -v 4.0.9 
+	```
 
 ## Install Application Dependencies
-```
-$ sudo apt-get install redis-server
-$ gem install sidekiq
-$ rbenv rehash
-```
+	```
+	$ sudo apt-get install redis-server
+	$ gem install sidekiq
+	$ rbenv rehash
+	```
 
 ## Setup Applicaiton
-```
-$ git clone https://github.com/Netflix/Scumblr.git
-$ cd Scumblr
-$ bundle install
-$ rake db:create
-$ rake db:schema:load
-```
+	```
+	$ git clone https://github.com/Netflix/Scumblr.git
+	$ cd Scumblr
+	$ bundle install
+	$ rake db:create
+	$ rake db:schema:load
+	```
 
 #### Create an Admin User
 Create Admin user:
 ```$ ../.rbenv/versions/2.0.0-p481/bin/rails c```
 
 In the console:
-```
-user = User.new
-user.email = "<Valid email address>"
-user.password = "<Password>"
-user.password_confirmation = "<Password>"
-user.admin = true
-user.save
-```
+	```
+	user = User.new
+	user.email = "<Valid email address>"
+	user.password = "<Password>"
+	user.password_confirmation = "<Password>"
+	user.admin = true
+	user.save
+	```
 
 ## Running Scumblr
-```$ redis-server & ../.rbenv/shims/bundle exec sidekiq -l log/sidekiq.log & ../.rbenv/shims/bundle exec rails s &```
+	```
+	$ redis-server & ../.rbenv/shims/bundle exec sidekiq -l log/sidekiq.log & ../.rbenv/shims/bundle exec rails s &
+	```
 
-	http://localhost:3000
+	- Find your scumblr login page at:
+		- http://localhost:3000
 
 #### Configure Email or Sketchy:
 
@@ -135,7 +138,9 @@ The :host option can also use an IP address and/or include the port if non-stand
 
 From the command line at the Scumblr root path, run:
 
-	```$ rake sync_all```
+	```
+	$ rake sync_all
+	```
 
 
 To do each function seperately:
@@ -149,6 +154,7 @@ To set up a cron job:
 - 0 \* \* \* \* rake -f /home/<USER>/Scumblr/Rakefile sync_all
 
 To run rake commands as root (not required), You will need to symlink rake to /usr/bin.
+	
 	- $ which rake
 	- $ which rake1.9.1
 	- $ sudo ln -s /home/<USER>/.rbenv/shims/rake /usr/bin/rake
@@ -156,19 +162,20 @@ To run rake commands as root (not required), You will need to symlink rake to /u
 
 # Configuring Search Providers
 Copy this repo's custom search providers into Scumblr's lib directory. The instructions below will guide you through building the necessary APIs for each search provider. 
-```
+	```
 	- cd ~
 	- $ git clone https://github.com/nkleck/Scumblr_Security_Tool.git
 	- $ mv Scumblr_Security_Tool/search_providers /Scumblr/lib/ 
-```
+	```
 
 In Scumblr/config/initializers/ you will need to edit the scumblr.rb.sample file and add the API keys. I also provided a scumblr.rb file already configured with the onion custom search provider. Just add the API keys. Instructions below!
 
 		- $ mv scumblr.rb.sample scumblr.rb
 
-	Add keys and uncomment ones in use
+		- Add keys and uncomment ones in use
 
-		- $ vi scumblr.rb
+			- $ vi scumblr.rb
+
 
 ### Google Custom Search Providers
 ##### Build your project and get API keys
@@ -265,29 +272,33 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 #### Production Setup:
 	- After running setup script:
 		- Generate CSR
-		```
+			```
 			$ openssl genrsa -des3 -out server.key 2048
 			$ openssl rsa -in server.key -out server.key.insecure
 			$ mv server.key server.key.secure
 			$ mv server.key.insecure server.key
 			$ openssl req -new -key server.key -out server.csr
-		```
+			```
+		
 		- Create self-signed certificate
-		```
+			```
 			$ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
-		```
+			```
+		
 		- Installing the Certs
-		```
+			```
 			$ sudo cp server.crt /etc/ssl/certs
 			$ sudo cp server.key /etc/ssl/private
-		```
+			```
+	
 	- Install nginx
-	```
+		```
 		$ sudo apt-get install nginx
 		$ sudo mkdir -p /var/log/nginx/
 		$ sudo touch /var/log/nginx/access.log
 		$ sudo touch /var/log/nginx/error.log
-	```
+		```
+
 	- Create sketchy.conf file for nginx
 		- $ sudo vi /etc/nginx/sites-available/sketchy.conf
 
@@ -357,7 +368,7 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 	- https://<ip>/api/v1.0/capture
 
 - Send a test capture to sketchy
-	- (https://<ip>/eager?url=http://google.com&type=sketch)
+	- https://<ip>/eager?url=http://google.com&type=sketch
 
 - If you turned off 80, 443 for security, you can run this on the server to see if sketchy is working
 	- $ wget http://127.0.0.1:8000/api/v1.0/capture
@@ -370,11 +381,11 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 
 - Turn sketchy integration on in Scumblr/config/initializers/scumblr.rb
 	- Uncomment the following two lines:
-	```
-	# config.sketchy_url = "http://localhost:80/api/v1.0/capture"
+		```
+		# config.sketchy_url = "http://localhost:80/api/v1.0/capture"
 
-	# config.sketchy_use_ssl = false  # Does sketchy use ssl?
-  	```
+		# config.sketchy_use_ssl = false  # Does sketchy use ssl?
+	  	```
 
   	- Modify: config.sketchy_url = "http://127.0.0.1:8000/api/v1.0/capture"
 
