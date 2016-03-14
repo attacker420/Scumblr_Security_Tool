@@ -310,14 +310,16 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 
 	- Add the following to: /sketchy/config-default.py
 
-		```# Set hostname:port of your server or IP address if running in test setup (default is 127.0.0.1:8000)
+		```
+		# Set hostname:port of your server or IP address if running in test setup (default is 127.0.0.1:8000)
 		# If you are using Nginx with SSL, only specify IP or Hostname
 		# Alternatively, you can export the 'host' variable on your system to set this as well
 		HOST = os.getenv('host', '127.0.0.1')
 
 		# Set to True if you are serving Sketchy over SSL with Nginx (default is False)
 		# Alternatively, you can export the 'use_ssl' variable on your system as well
-		SSL = os.getenv('use_ssl', False)```
+		SSL = os.getenv('use_ssl', False)
+		```
 
 	- modify sketchy/supervisor/supervisor.ini
 
@@ -342,7 +344,7 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 	- https://<ip>/api/v1.0/capture
 
 - Send a test capture to sketchy
-	- https://<ip>/eager?url=http://google.com&type=sketch
+	- https://<ip>/eager?url=\http://google.com&type=sketch
 
 - If you turned off 80, 443 for security, you can run this on the server to see if sketchy is working
 	- $ wget http://127.0.0.1:8000/api/v1.0/capture
@@ -373,9 +375,9 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 	- $ vi /Scumblr/public/robots.txt
 
 - If reboot server, sketchy db is deleted, as it resides in /tmp
-- So run the following to rebuild the DB
-	- $ sudo python setup.py install
-	- $ python manage.py create_db
+	- So run the following to rebuild the DB
+		- $ sudo python setup.py install
+		- $ python manage.py create_db
 
 
 
