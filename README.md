@@ -105,22 +105,22 @@ Create Admin user:
 ```$ ../.rbenv/versions/2.0.0-p481/bin/rails c```
 
 In the console:
-	```
-	user = User.new
-	user.email = "<Valid email address>"
-	user.password = "<Password>"
-	user.password_confirmation = "<Password>"
-	user.admin = true
-	user.save
-	```
+```
+user = User.new
+user.email = "<Valid email address>"
+user.password = "<Password>"
+user.password_confirmation = "<Password>"
+user.admin = true
+user.save
+```
 
 ## Running Scumblr
 ```
 $ redis-server & ../.rbenv/shims/bundle exec sidekiq -l log/sidekiq.log & ../.rbenv/shims/bundle exec rails s &
 ```
 
-	- Find your scumblr login page at:
-		- http://localhost:3000
+- Find your scumblr login page at:
+	- http://localhost:3000
 
 #### Configure Email or Sketchy:
 
@@ -171,11 +171,11 @@ Copy this repo's custom search providers into Scumblr's lib directory. The instr
 
 In Scumblr/config/initializers/ you will need to edit the scumblr.rb.sample file and add the API keys. I also provided a scumblr.rb file already configured with the onion custom search provider. Just add the API keys. Instructions below!
 
-		- $ mv scumblr.rb.sample scumblr.rb
+- $ mv scumblr.rb.sample scumblr.rb
 
-		- Add keys and uncomment ones in use
+- Add keys and uncomment ones in use
 
-			- $ vi scumblr.rb
+	- $ vi scumblr.rb
 
 
 ### Google Custom Search Providers
