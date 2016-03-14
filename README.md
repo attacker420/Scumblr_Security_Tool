@@ -23,6 +23,8 @@ This repo contains everything you need to deploy an instance of Scumblr https://
 	- 4chan and 8ch Custom Search Providers
 	- YouTube Search Provider
 - Sketchy Integration
+	- Sketchy Setup
+	- Sketchy - Scumblr Integration
 - Slack Integration
 - MISC
 
@@ -256,7 +258,110 @@ http://pastebin.com/pro
 
 
 # Sketchy Integration
-- TODO
+Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of the pages you are monitoring with Scumblr.
+
+## Sketchy Setup
+- Follow instructinos here: https://github.com/Netflix/sketchy/wiki/Setup
+#### Production Setup:
+	- After running setup script:
+		- Generate CSR
+			- $ openssl genrsa -des3 -out server.key 2048
+			- $ openssl rsa -in server.key -out server.key.insecure
+			- $ mv server.key server.key.secure
+			- $ mv server.key.insecure server.key
+			- $ openssl req -new -key server.key -out server.csr
+		- Create self-signed certificate
+			- $ openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+		- Installing the Certs
+			- $ sudo cp server.crt /etc/ssl/certs
+			- $ sudo cp server.key /etc/ssl/private
+	- Install nginx
+		- sudo apt-get install nginx
+		- $ sudo mkdir -p /var/log/nginx/
+		- $ sudo touch /var/log/nginx/access.log
+		- $ sudo touch /var/log/nginx/error.log
+	- Create sketchy.conf file for nginx
+		- $ sudo vi /etc/nginx/sites-available/sketchy.conf
+
+	    ```
+	    server {
+	        listen      0.0.0.0:443 ssl;
+	        ssl_certificate /etc/ssl/certs/server.crt;
+	        ssl_certificate_key /etc/ssl/private/server.key;
+	        access_log  /var/log/nginx/access.log;
+	        error_log   /var/log/nginx/error.log;
+
+	        root /path/to/your/sketchy;
+
+	        location / {
+	            proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
+	            proxy_set_header Host $http_host;
+	            proxy_redirect off;
+	            proxy_pass http://127.0.0.1:8000;
+	            proxy_connect_timeout 30;
+	            proxy_read_timeout 40;
+	        }
+	    }
+	    ```
+
+    	- $ sudo ln -s /etc/nginx/sites-available/sketchy.conf /etc/nginx/sites-enabled/sketchy.conf
+		- $ sudo rm /etc/nginx/sites-enabled/default
+		- $ sudo service nginx restart
+
+	- Add the following to: /sketchy/config-default.py
+
+		```# Set hostname:port of your server or IP address if running in test setup (default is 127.0.0.1:8000)
+		# If you are using Nginx with SSL, only specify IP or Hostname
+		# Alternatively, you can export the 'host' variable on your system to set this as well
+		HOST = os.getenv('host', '127.0.0.1')
+
+		# Set to True if you are serving Sketchy over SSL with Nginx (default is False)
+		# Alternatively, you can export the 'use_ssl' variable on your system as well
+		SSL = os.getenv('use_ssl', False)```
+
+	- modify sketchy/supervisor/supervisor.ini
+
+		```
+		$ vi /supervisor/supervisor.ini
+		- in celeryd and gunicorn sections:
+		- change user= to your user and directory=/path/to/sketchy/
+		```
+
+#### Start sketchy:
+- Start Sketchy with the following commands:
+	- $ sudo -s
+	- $ cd /path/to/sketchy
+	- $ source sketchenv/bin/activate
+	- $ cd /path/to/sketchy/supervisor
+	- $ supervisord -c supervisord.ini
+
+- To see logging:
+	- $ tail -f supervisor/supervisor.log
+
+- Go to your site DB:
+	- https://<ip>/api/v1.0/capture
+
+- Send a test capture to sketchy
+	- https://<ip>/eager?url=http://google.com&type=sketch
+
+- If you turned off 80, 443 for security, you can run this on the server to see if sketchy is working
+	- $ wget http://127.0.0.1:8000/api/v1.0/capture
+	- $ cat capture
+
+## Sketchy - Scumblr Integration
+- Make sure the IP:Port are at the bottom of Scumblr/config/environments/production.rb
+	- Rails.application.routes.default_url_options[:host] = "<publicIP:3000>"
+	- Rails.application.routes.default_url_options[:protocol] = "https"
+
+- Turn sketchy integration on in Scumblr/config/initializers/scumblr.rb
+	- Uncomment the following two lines:
+	```
+	# config.sketchy_url = "http://localhost:80/api/v1.0/capture"
+
+	# config.sketchy_use_ssl = false  # Does sketchy use ssl?
+  	```
+
+  	- Modify: config.sketchy_url = "http://127.0.0.1:8000/api/v1.0/capture"
 
 
 # Slack Integration
@@ -265,8 +370,12 @@ http://pastebin.com/pro
 
 # MISC
 - To ban all spiders from the entire site uncomment the User-Agent and Disallow lines
+	- $ vi /Scumblr/public/robots.txt
 
-$ vi /Scumblr/public/robots.txt
+- If reboot server, sketchy db is deleted, as it resides in /tmp
+- So run the following to rebuild the DB
+	- $ sudo python setup.py install
+	- $ python manage.py create_db
 
 
 
