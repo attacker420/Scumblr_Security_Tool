@@ -122,8 +122,9 @@ The :host option can also use an IP address and/or include the port if non-stand
 
 - $ vi Scumblr/config/environments/production.rb | test.rb
 
-Rails.application.routes.default_url_options[:host] = "scumblr.com"
-Rails.application.routes.default_url_options[:protocol] = "https"
+		Rails.application.routes.default_url_options[:host] = "scumblr.com"
+
+		Rails.application.routes.default_url_options[:protocol] = "https"
 
 
 # Automatic Syncing
@@ -145,30 +146,27 @@ To set up a cron job:
 - $ crontab -e
 - 0 \* \* \* \* rake -f /home/<USER>/Scumblr/Rakefile sync_all
 
-To run rake commands as root (not required):
-
-- You will need to symlink rake to /usr/bin
-
-- $ which rake
-- $ which rake1.9.1
-- $ sudo ln -s /home/<USER>/.rbenv/shims/rake /usr/bin/rake
+To run rake commands as root (not required), You will need to symlink rake to /usr/bin.
+	- $ which rake
+	- $ which rake1.9.1
+	- $ sudo ln -s /home/<USER>/.rbenv/shims/rake /usr/bin/rake
 
 
 # Configuring Search Providers
 Copy this repo's custom search providers into Scumblr's lib directory. The instructions below will guide you through building the necessary APIs for each search provider. 
 
-- $ git clone https://github.com/nkleck/Scumblr_Security_Tool.git
-
-- $ mv search\ providers/ /Scumblr/lib/ 
+	- cd ~
+	- $ git clone https://github.com/nkleck/Scumblr_Security_Tool.git
+	- $ mv Scumblr_Security_Tool/search_providers /Scumblr/lib/ 
 
 
 In Scumblr/config/initializers/ you will need to edit the scumblr.rb.sample file and add the API keys. I also provided a scumblr.rb file already configured with the onion custom search provider. Just add the API keys. Instructions below!
 
-- $ mv scumblr.rb.sample scumblr.rb
+		- $ mv scumblr.rb.sample scumblr.rb
 
-Add keys and uncomment ones in use
+	Add keys and uncomment ones in use
 
-- $ vi scumblr.rb
+		- $ vi scumblr.rb
 
 ### Google Custom Search Providers
 ##### Build your project and get API keys
