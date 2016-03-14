@@ -60,6 +60,7 @@ http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-li
 
 ## Pre-Installation Items
 Install Rbenv/Ruby
+	
 	```
 	$ cd ~
 	$ git clone https://github.com/sstephenson/rbenv.git .rbenv
