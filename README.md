@@ -344,7 +344,7 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 	- https://<ip>/api/v1.0/capture
 
 - Send a test capture to sketchy
-	- https://<ip>/eager?url=\http://google.com&type=sketch
+	- (https://<ip>/eager?url=http://google.com&type=sketch)
 
 - If you turned off 80, 443 for security, you can run this on the server to see if sketchy is working
 	- $ wget http://127.0.0.1:8000/api/v1.0/capture
