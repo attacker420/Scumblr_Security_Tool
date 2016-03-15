@@ -404,7 +404,12 @@ Sketchy is a tool that integrates well with Scumblr. You can grab screenshots of
 		- $ sudo python setup.py install
 		- $ python manage.py create_db
 
-
+- If need to run Scumblr in background
+```
+$ nohup redis-server </dev/null &>/dev/null & 
+$ ../.rbenv/shims/bundle exec sidekiq -d -l log/sidekiq.log 
+$ nohup ../.rbenv/shims/bundle exec rails s </dev/null &>/dev/null &
+```
 
 
 
