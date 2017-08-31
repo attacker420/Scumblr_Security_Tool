@@ -1,7 +1,4 @@
-#     Contributions by Nick Kleck
-#         8ch search provider
 #
-#     Copyright 2014 Netflix, Inc.        
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -21,12 +18,12 @@ require 'json'
 
 class SearchProvider::EightChan < SearchProvider::Provider
   def self.provider_name
-    "8ch Search"
+    "8chan Search"
   end
 
   def self.options
     {
-      :board=>{name: "Search specific board", description: "Search a specific board within 4chan for this query (or else board = b (random))", required: false}
+      :board=>{name: "Search specific board", description: "Search a specific board within 8chan for this query (or else board = b (random))", required: false}
     }
   end
 
@@ -40,7 +37,7 @@ class SearchProvider::EightChan < SearchProvider::Provider
 
     response = Net::HTTP.get_response(URI(url))
     results = []
-    if response.code == "200" 
+    if response.code == "200"
       search_results = JSON.parse(response.body)
       if (@query.blank?)
         search_results.each do |a|

@@ -1,32 +1,30 @@
-# Deploying Scumblr as a Security Tool
+# Deploying Scumblr 2.0 as a Security Tool
 
-This repo contains everything you need to deploy an instance of Scumblr https://github.com/Netflix/Scumblr to monitor for potentially malicious cyber activity. Scumblr is a Netflix open source project that allows performing periodic searches and storing / taking actions on the identified results.  I have made a few changes and added some useful Search Providers. More on that further down.  The origional setup documentation can be found here: https://github.com/Netflix/Scumblr/wiki
+This repo contains everything you need to deploy an instance of Scumblr https://github.com/Netflix/Scumblr to monitor for potentially malicious cyber activity. Scumblr is a Netflix open source project that allows performing periodic searches and storing / taking actions on the identified results.  I have made a few changes and added some useful Search Providers. More on that further down.  The original setup documentation can be found here: https://github.com/Netflix/Scumblr/wiki/Setting-up-Scumblr-2.0-(New-install)
 
 # Table of Contents
-
-<!-- MarkdownTOC depth=3 -->
-
-- Search Providers
+- Deploying Scumblr 2.0 as a Security Tool
+	- Search Providers
 - SETUP
 	- Requirements
-	- Pre-Installation Items
-	- Install Ruby on Rails
-	- Install Application Dependencies
-	- Setup Applicaiton
+	- Follow Scumblr 2.0 Docs to build
+	- Follow Sketchy Docs to build
+	- Configure Scumblr to use Sketchy
+	- Creating Services
+        - Scumblr Service
+		- Sketchy Service
 	- Running Scumblr
+	- Running Sketchy
 - Automatic Syncing
 - Configuring Search Providers
+- Add keys and uncomment ones in use
 	- Google Custom Search Providers
 	- Facebook Search Provider
 	- Twitter Search Provider
 	- Pastebin Custom Search Provider
 	- 4chan and 8ch Custom Search Providers
 	- YouTube Search Provider
-- Sketchy Integration
-- Slack Integration
-- MISC
-
-<!-- /MarkdownTOC -->
+- Starting it All
 
 ## Search Providers
 
@@ -47,82 +45,196 @@ This repo contains everything you need to deploy an instance of Scumblr https://
 
 ## Requirements
 
-- Ubuntu Server 14.04
+- Ubuntu Server 16.04
 - install Openssh-server if not already installed
-	- $ sudo apt-get install openssh-server 
+	- $ sudo apt-get install openssh-server
 - Harden your Server if you have not already done so. Good instructions here:
 http://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers
 	- $ sudo apt-get update
 	- $ sudo apt-get -y install git libxslt-dev libxml2-dev build-essential bison openssl zlib1g libxslt1.1 libssl-dev libxslt1-dev libxml2 libffi-dev libxslt-dev libpq-dev autoconf libc6-dev libreadline6-dev zlib1g-dev libtool libsqlite3-dev libcurl3 libmagickcore-dev ruby-build libmagickwand-dev imagemagick bundler
 
 
-## Pre-Installation Items
-Install Rbenv/Ruby
+## Follow Scumblr 2.0 Docs to build
 
-- $ cd ~
-- $ git clone https://github.com/sstephenson/rbenv.git .rbenv
-- $ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-- $ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-- $ exec $SHELL
+https://github.com/Netflix/Scumblr/wiki/Setting-up-Scumblr-2.0-(New-install)
 
-- $ git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-- $ echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
-- $ exec $SHELL
+## Follow Sketchy Docs to build
 
-- $ rbenv install 2.0.0-p481
-- $ rbenv global 2.0.0-p481
-- $ ruby -v
-
-## Install Ruby on Rails
-- $ gem install bundler --no-ri --no-rdoc
-- $ rbenv rehash
-- $ gem install rails -v 4.0.9 
-
-## Install Application Dependencies
-- $ sudo apt-get install redis-server
-- $ gem install sidekiq
-- $ rbenv rehash
-
-## Setup Applicaiton
-- $ git clone https://github.com/Netflix/Scumblr.git
-- $ cd Scumblr
-- $ bundle install
-- $ rake db:create
-- $ rake db:schema:load
-
-#### Create an Admin User
-Create Admin user:
-- $ ../.rbenv/versions/2.0.0-p481/bin/rails c
-
-In the console:
-
-- user = User.new
-
-- user.email = "<Valid email address>"
-
-- user.password = "<Password>"
-
-- user.password_confirmation = "<Password>"
-
-- user.admin = true
-
-- user.save
+https://github.com/Netflix/Sketchy/wiki
 
 
-## Running Scumblr
-- $ redis-server & ../.rbenv/shims/bundle exec sidekiq -l log/sidekiq.log & ../.rbenv/shims/bundle exec rails s &
-
-http://localhost:3000
-
-#### Configure Email or Sketchy:
+## Configure Scumblr to use Sketchy
 
 The :host option can also use an IP address and/or include the port if non-standard (i.e. "192.168.10.101:3000")
 
-- $ vi Scumblr/config/environments/production.rb | test.rb
+```
+$ vi Scumblr/config/environments/development.rb
+Rails.application.routes.default_url_options[:host] = "localhost:3000"
 
-Rails.application.routes.default_url_options[:host] = "scumblr.com"
-Rails.application.routes.default_url_options[:protocol] = "https"
 
+$ vi Scumblr/config/initializers/scumblr.rb
+config.sketchy_url = "http://127.0.0.1:8000/api/v1.0/capture"
+config.sketchy_use_ssl = "sketchy_use_ssl" == "false" ? false : true # Does sketchy use ssl?
+config.sketchy_verify_ssl = "false" ? false : true # Should scumblr verify sketchy's cert
+#config.sketchy_tag_status_code = "sketchy_tag_status_code" # Add a tag indicating last status code sketchy received
+#config.sketchy_access_token = "sketchy_access_token"
+```
+
+## Creating Services
+you can create a service for scumblr and sketchy.
+
+### Scumblr service
+
+
+$ vi controller/start_scumblr.sh
+```
+#!/bin/bash
+# start scumblr
+cd /home/johnsnow/Scumblr
+nohup redis-server &>/dev/null & ../.rbenv/shims/bundle exec sidekiq -d -l log/sidekiq.log & nohup ../.rbenv/shims/bundle exec rails s -b 0.0.0.0 &>/dev/null &
+```
+
+
+$ vi controller/stop_scumblr.sh
+```
+#!/bin/bash
+# Grabs and kill a process from the pidlist that has the word 'sidekiq 4.2.3 Scumblr'
+ps aux | grep 'sidekiq 4.2.3 Scumblr' | awk '{print $2}' | xargs kill -9
+# Grabs and kill a process from the pidlist that has the word 'rails master -b'
+ps aux | grep 'rails master -b' | awk '{print $2}' | xargs kill -9
+# Grabs and kill a process from the pidlist that has the word 'rails worker'
+ps aux | grep 'rails worker' | awk '{print $2}' | xargs kill -9
+# Grabs and kill a process from the pidlist that has the word 'redis-server'
+ps aux | grep 'redis-server' | awk '{print $2}' | xargs kill -9
+```
+
+$ vi controller/scumblr
+```
+#!/bin/bash
+# Scumblr Control /etc/init.d/ script
+#
+# Copy this file into /etc/init.d/ then chmod +x (add execution options) it and 'update-rc.d scumblr defaults'
+#
+
+case $1 in
+        start)
+                sudo -u johnsnow /bin/bash /home/johnsnow/Scumblr/controller/start_scumblr.sh
+        ;;
+        stop)
+                sudo -u johnsnow /bin/bash /home/johnsnow/Scumblr/controller/stop_scumblr.sh
+        ;;
+        restart)
+                sudo -u johnsnow /bin/bash /home/johnsnow/Scumblr/controller/stop_scumblr.sh
+                sudo -u johnsnow /bin/bash /home/johnsnow/Scumblr/controller/start_scumblr.sh
+        ;;
+esac
+exit 0
+```
+
+Set permissions and move service
+```
+$ chmod a+x controller/start_scumblr.sh
+$ chmod a+x controller/stop_scumblr.sh
+$ chmod a+x controller/scumblr
+$ sudo cp controller/scumblr /etc/init.d/
+
+update init.d service
+$ update-rc.d scumblr defaults
+```
+
+### Sketchy Service
+Create sketchy service
+
+$ vi sketchy/controller/stop_sketchy.sh
+```
+#!/bin/bash
+# stop nginx
+service nginx stop
+# Grabs and kill a process from the pidlist that has the word 'sidekiq 4.2.3 Scumblr'
+ps aux | grep 'supervisord -c' | awk '{print $2}' | xargs kill -9
+# Grabs and kill a process from the pidlist that has the word 'rails master -b'
+ps aux | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+# Grabs and kill a process from the pidlist that has the word 'rails worker'
+ps aux | grep 'gunicorn sketchy:app' | awk '{print $2}' | xargs kill -9
+# Grabs and kill a process from the pidlist that has the word 'redis-server'
+ps aux | grep 'celery worker' | awk '{print $2}' | xargs kill -9
+```
+
+$ vi sketchy/controller/start_sketchy.sh
+```
+#!/bin/bash
+service nginx start
+cd /home/johnsnow/sketchy
+source sketchenv/bin/activate
+supervisord -c supervisor/supervisord.ini
+exit
+```
+
+
+$ vi sketchy/controller/sketchy
+```
+#!/bin/bash
+# Sketchy Control /etc/init.d/ script
+#
+# Copy this file into /etc/init.d/ then chmod +x (add execution options) it and 'update-rc.d sketchy defaults'
+#
+
+case $1 in
+        start)
+                /bin/bash /home/johnsnow/sketchy/controller/start_sketchy.sh
+        ;;
+        stop)
+                /bin/bash /home/johnsnow/sketchy/controller/stop_sketchy.sh
+        ;;
+        restart)
+                /bin/bash /home/johnsnow/sketchy/controller/stop_sketchy.sh
+                /bin/bash /home/johnsnow/sketchy/controller/start_sketchy.sh
+        ;;
+esac
+exit 0
+```
+
+Make permission changes
+```
+$ chmod a+x sketchy/controller/start_sketchy.sh
+$ chmod a+x sketchy/controller/stop_sketchy.sh
+$ chmod a+x sketchy/controller/sketchy
+$ sudo cp sketchy/controller/sketchy /etc/init.d/
+
+update init.d service
+$ update-rc.d sketchy defaults
+```
+
+## Running Scumblr
+you can now run scumblr with a much simplier command
+
+original command:
+```
+- $ redis-server & ../.rbenv/shims/bundle exec sidekiq -l log/sidekiq.log & ../.rbenv/shims/bundle exec rails s &
+```
+new command:
+```
+$ sudo service scumblr [start|stop|restart]
+```
+
+## Running Sketchy
+you can now run sketchy with a much simpler command
+
+original command:
+```
+to start sketchy:
+
+$ sudo -s
+$ cd /path/to/sketchy
+$ source sketchenv/bin/activate
+$ cd /path/to/sketchy/supervisor
+$ supervisord -c supervisor/supervisord.ini
+```
+
+new command:
+```
+$ sudo service sketchy [start|stop|restart]
+```
 
 # Automatic Syncing
 
@@ -153,20 +265,19 @@ To run rake commands as root (not required):
 
 
 # Configuring Search Providers
-Copy this repo's custom search providers into Scumblr's lib directory. The instructions below will guide you through building the necessary APIs for each search provider. 
-
-- $ git clone https://github.com/nkleck/Scumblr_Security_Tool.git
-
-- $ mv search\ providers/ /Scumblr/lib/ 
-
+Copy this repo's custom search providers into Scumblr's lib directory. The instructions below will guide you through building the necessary APIs for each search provider.
+```
+$ git clone https://github.com/nkleck/Scumblr_Security_Tool.git
+$ cp search\ providers/* /Scumblr/lib/
+```
 
 In Scumblr/config/initializers/ you will need to edit the scumblr.rb.sample file and add the API keys. I also provided a scumblr.rb file already configured with the onion custom search provider. Just add the API keys. Instructions below!
 
-- $ mv scumblr.rb.sample scumblr.rb
-
-Add keys and uncomment ones in use
-
-- $ vi scumblr.rb
+```
+$ mv scumblr.rb.sample scumblr.rb
+# Add keys and uncomment ones in use
+$ vi scumblr.rb
+```
 
 ### Google Custom Search Providers
 ##### Build your project and get API keys
@@ -197,7 +308,7 @@ Add keys and uncomment ones in use
 	- Delete www.google.com from sites if you want, it is unnessary
 	- Click Update
 	- The remaining fields in /Scumblr/config/initializers/scumblr.rb are the App name and version = '1.0'
-	
+
 #### Search all .onion (TOR) sites custom search
 - Repeat all of the steps above for a new project, API Key, and custom search, with a few changes
 	- You could name the project 'scumblr-onion-search'
@@ -252,25 +363,13 @@ http://pastebin.com/pro
 	- When your API key generates, copy it
 	- Paste the API key into the "config.youtube_developer_key" field in /Scumblr/config/initializers/scumblr.rb
 	- The remaining fields in /Scumblr/config/initializers/scumblr.rb are the App name = 'youtube' and version = 'v3'
-- YouTube Search Provider is configured 
+- YouTube Search Provider is configured
 
+# Starting it All
+if reboot, start postgres, then sketchy, then scumblr
 
-# Sketchy Integration
-- TODO
-
-
-# Slack Integration
-- TODO
-
-
-# MISC
-- To ban all spiders from the entire site uncomment the User-Agent and Disallow lines
-
-$ vi /Scumblr/public/robots.txt
-
-
-
-
-
-
-
+```
+$ sudo service postgresql start
+$ sudo service sketchy start
+$ sudo service scumblr start
+```

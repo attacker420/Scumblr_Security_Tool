@@ -1,8 +1,5 @@
-#     Contributions by Nick Kleck
-#         4chan search provider
 #
-#     Copyright 2014 Netflix, Inc.  
-#    
+#
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
 #     You may obtain a copy of the License at
@@ -30,6 +27,10 @@ class SearchProvider::FourChan < SearchProvider::Provider
     }
   end
 
+  def self.description
+    "Search 4chan and create results"
+  end
+
   def initialize(query, options={})
       super
         @options[:board] = @options[:board].blank? ? 'b' : @options[:board]
@@ -40,12 +41,12 @@ class SearchProvider::FourChan < SearchProvider::Provider
 
     response = Net::HTTP.get_response(URI(url))
     results = []
-    if response.code == "200" 
+    if response.code == "200"
       search_results = JSON.parse(response.body)
       if (@query.blank?)
         search_results.each do |a|
           a['threads'].each do |b|
-            link = "http://boards.4chan.org/" + @options[:board] + "/thread/" + b['no'].to_s + b['semantic_url']
+            link = "http://boards.4chan.org/" + @options[:board] + "/thread/" + b['no'].to_s
             results <<
             {
               :title => b['filename'],
@@ -58,7 +59,7 @@ class SearchProvider::FourChan < SearchProvider::Provider
       else
         search_results.each do |c|
           c['threads'].each do |d|
-            link = "http://boards.4chan.org/" + @options[:board] + "/thread/" + d['no'].to_s + d['semantic_url']
+            link = "http://boards.4chan.org/" + @options[:board] + "/thread/" + d['no'].to_s
             x = d['com']
             if x[@query]
               results <<

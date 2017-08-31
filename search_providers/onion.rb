@@ -1,7 +1,4 @@
-#     Contributions by Nick Kleck
-#         onion search provider created by Nick Kleck
-#
-#     Copyright 2014 Netflix, Inc.  
+#     Copyright 2016 Netflix, Inc.
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -21,17 +18,17 @@ require 'google/api_client'
 class SearchProvider::Onion < SearchProvider::Provider
 
   def self.provider_name
-    "Onion Search"
+    "Onion Website Search"
   end
 
   def self.options
     {
       :cx=> {name: "Custom Search ID (cx)",
-         description: "Custom search engine id (default searches all sites with *.onion.link/*)",
+         description: "Custom search engine id (default searches entire web)",
          required: false
          },
       :site => { name: "Limit to Site",
-         description: "Allows limiting to a specific site within onion.link/",
+         description: "Allows limiting to a specific domain",
          required: false
          },
       :days_to_search => { name: "Max result age (days)",
@@ -46,24 +43,50 @@ class SearchProvider::Onion < SearchProvider::Provider
 
   end
 
+  def self.description
+    "Search Onion (Tor) websites to create results"
+  end
+
+  def self.config_options
+    {:google_developer_key =>{ name: "Google Developer Key",
+      description: "This key provides access to the Google API",
+      required: true
+      },
+      :google_cx =>{ name: "Google Custom Search Engine Id (cx)",
+      description: "This specifies the custom search engine to use for the search. If this is not specified in configuration it must be specified in the task options below.",
+      required: false
+      },
+      :google_application_name =>{ name: "The name of your application to be sent to Google",
+      description: "This specifies the name of your application which Google requests and will be sent with API requests",
+      required: false
+      },
+      :google_application_version =>{ name: "The version of your application to be sent to Google",
+      description: "This specifies the version of your application which Google requests and will be sent with API requests.",
+      required: false
+      }
+
+    }
+  end
+
+
   def initialize(query, options={})
     super
 
-    @google_developer_key = Rails.configuration.try(:google_onion_developer_key)
     @cx = options[:cx].present? ? options[:cx] : Rails.configuration.try(:google_onion_cx)
+    @google_developer_key = Rails.configuration.try(:google_onion_developer_key)
     @application_name = Rails.configuration.try(:google_onion_application_name)
     @application_version = Rails.configuration.try(:google_onion_application_verion)
+
     @site_search = options[:site].present? ? options[:site] : nil
     @max_results = options[:max_results].to_i > 0 ? options[:max_results].to_i : 10
     @max_results = @max_results > 100 ? 100 : @max_results
+
+
   end
 
 
   def run
-    if(@google_developer_key.blank?)
-      Rails.logger.error "Unable to search Google. No developer key. Please define a developer key as google_developer_key in the Scumblr initializer."
-      return []
-    end
+
     if(@cx.blank?)
       Rails.logger.error "Unable to search Google. No cx. Please define a cx as google_cx in the Scumblr initializer or pass in as a search option."
       return []
@@ -71,7 +94,7 @@ class SearchProvider::Onion < SearchProvider::Provider
 
     results =[]
 
-    client = Google::APIClient.new(:key => @google_developer_key, :authorization => nil, :application_name=>@application_name, :application_version=>@application_version)
+    client = Google::APIClient.new(:key => @google_developer_key, :authorization => nil, :application_name=>@google_application_name, :application_version=>@google_application_version)
 
     search = client.discovered_api('customsearch')
 

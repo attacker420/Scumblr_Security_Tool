@@ -23,18 +23,12 @@ class SearchProvider::Pastebin < SearchProvider::Provider
 
   def self.options
     {
-      :results=>{name: "Max search",
-         description: "Specify the number of recent Pastebin paste's to search, limit: 500 | blank: 50",
-         required: false
-         }
+      :results=>{name: "Max search", description: "Specify the number of recent posts to Pastebin to search, limit: 500 | blank: 50", required: false}
     }
-
   end
 
   def self.description
-    "Search Pastebin for recent posts.
-    Include many searchterms in 'Query'.
-    Seperate each searchterm by ';' w/o quotes"
+    "Search Pastebin and create results"
   end
 
   def initialize(query, options={})
@@ -43,13 +37,6 @@ class SearchProvider::Pastebin < SearchProvider::Provider
   end
 
   def run
-    if @query.include?(";")
-        querylist = @query.split("; ")
-    else
-        querylist = []
-        querylist.push(@query)
-    end
-
     url = URI.escape('http://pastebin.com/api_scraping.php?limit=' + @options[:results].to_s)
 
     response = Net::HTTP.get_response(URI(url))
@@ -58,21 +45,18 @@ class SearchProvider::Pastebin < SearchProvider::Provider
 
       search_results = JSON.parse(response.body)
       search_results.each do |a| # this finds itmes in the array
-          paste_page = HTTParty.get(a["scrape_url"])
-          querylist.each do |searchterm|
-              if paste_page.body[searchterm]
-                  results <<
-                  {
-                      :title => a['title'],
-                      :url => a['scrape_url'],
-                      :domain => "pastebin.com",
-                      :tags => searchterm
-                  }
-              end
-          end
+        paste_page = HTTParty.get(a["scrape_url"])
+        if paste_page.body[@query]
+          results <<
+          {
+            :title => a['title'],
+            :url => a['scrape_url'],
+            :domain => "pastebin.com"
+          }
+        end
       end
     else
-        Rails.logger.error "Bad response received from Pastebin. Response code: #{response.code}.\nResponse: #{response.try(:body)}"
+      Rails.logger.error "Bad response received from Pastebin. Response code: #{response.code}.\nResponse: #{response.try(:body)}"
     end
     return results
   end

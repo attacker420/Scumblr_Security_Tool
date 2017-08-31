@@ -1,7 +1,4 @@
-#     Contributions by Nick Kleck
-#         Unmodified
-#
-#     Copyright 2014 Netflix, Inc.
+#     Copyright 2016 Netflix, Inc.
 #
 #     Licensed under the Apache License, Version 2.0 (the "License");
 #     you may not use this file except in compliance with the License.
@@ -32,6 +29,10 @@ class SearchProvider::Reddit < SearchProvider::Provider
     }
   end
 
+  def self.description
+    "Search Reddit and create results"
+  end
+
   def initialize(query, options={})
     super
         @options[:results] = @options[:results].blank? ? 25 : @options[:results]
@@ -47,6 +48,7 @@ class SearchProvider::Reddit < SearchProvider::Provider
     response = Net::HTTP.get_response(URI(url))
     results = []
     if response.code == "200"
+
       search_results = JSON.parse(response.body)
       search_results['data']['children'].each do |result|
         results <<
@@ -56,6 +58,8 @@ class SearchProvider::Reddit < SearchProvider::Provider
           :domain => "reddit.com"
         }
       end
+    else
+      Rails.logger.error "Bad response received from Reddit. Response code: #{response.code}.\nResponse: #{response.try(:body)}"
     end
     return results
   end
