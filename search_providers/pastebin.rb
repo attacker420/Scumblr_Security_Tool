@@ -50,7 +50,7 @@ class SearchProvider::Pastebin < SearchProvider::Provider
         querylist.push(@query)
     end
 
-    url = URI.escape('http://pastebin.com/api_scraping.php?limit=' + @options[:results].to_s)
+    url = URI.escape('https://pastebin.com/api_scraping.php?limit=' + @options[:results].to_s)
 
     response = Net::HTTP.get_response(URI(url))
     results = []
