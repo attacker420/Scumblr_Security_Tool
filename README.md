@@ -325,6 +325,8 @@ $ vi scumblr.rb
 http://pastebin.com/pro
 - Then enter the public IP address of your server into this page http://pastebin.com/api_scraping_faq
 - The data is scraped from the pastebin site and the query terms are compared in memory on this machine
+- When using query field, entries can be a single string or multiple entries delineated by ;
+- I recommend creating 1 pastebin job that runs every 10-20 minutes and pulls the last 500 paste's. This query can contain all of your searchstrings separated by a ;
 
 
 ### 4chan and 8ch Custom Search Providers
