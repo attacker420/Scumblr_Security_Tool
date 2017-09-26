@@ -65,7 +65,7 @@ Rails.application.routes.default_url_options[:host] = "localhost:3000"
 
 ```
 $ vi Scumblr/config/initializers/scumblr.rb
-config.sketchy_url = "http://127.0.0.1:8000/api/v1.0/capture"
+config.sketchy_url = "https://127.0.0.1/api/v1.0/capture"
 config.sketchy_use_ssl = "sketchy_use_ssl" == "false" ? false : true # Does sketchy use ssl?
 config.sketchy_verify_ssl = "false" ? false : true # Should scumblr verify sketchy's cert
 #config.sketchy_tag_status_code = "sketchy_tag_status_code" # Add a tag indicating last status code sketchy received
@@ -89,8 +89,8 @@ nohup redis-server &>/dev/null & ../.rbenv/shims/bundle exec sidekiq -d -l log/s
 $ vi controller/stop_scumblr.sh
 ```
 #!/bin/bash
-# Grabs and kill a process from the pidlist that has the word 'sidekiq 4.2.3 Scumblr'
-ps aux | grep 'sidekiq 4.2.3 Scumblr' | awk '{print $2}' | xargs kill -9
+# Grabs and kill a process from the pidlist that has the word 'sidekiq 4.2.10 Scumblr'
+ps aux | grep 'sidekiq 4.2.10 Scumblr' | awk '{print $2}' | xargs kill -9
 # Grabs and kill a process from the pidlist that has the word 'rails master -b'
 ps aux | grep 'rails master -b' | awk '{print $2}' | xargs kill -9
 # Grabs and kill a process from the pidlist that has the word 'rails worker'
@@ -141,14 +141,12 @@ $ vi sketchy/controller/stop_sketchy.sh
 #!/bin/bash
 # stop nginx
 service nginx stop
-# Grabs and kill a process from the pidlist that has the word 'sidekiq 4.2.3 Scumblr'
+# Grabs and kill a process from the pidlist that has the word 'supervisord -c'
 ps aux | grep 'supervisord -c' | awk '{print $2}' | xargs kill -9
-# Grabs and kill a process from the pidlist that has the word 'rails master -b'
+# Grabs and kill a process from the pidlist that has the word 'celery worker'
 ps aux | grep 'celery worker' | awk '{print $2}' | xargs kill -9
-# Grabs and kill a process from the pidlist that has the word 'rails worker'
+# Grabs and kill a process from the pidlist that has the word 'gunicorn sketchy:app'
 ps aux | grep 'gunicorn sketchy:app' | awk '{print $2}' | xargs kill -9
-# Grabs and kill a process from the pidlist that has the word 'redis-server'
-ps aux | grep 'celery worker' | awk '{print $2}' | xargs kill -9
 ```
 
 $ vi sketchy/controller/start_sketchy.sh
