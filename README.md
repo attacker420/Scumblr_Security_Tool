@@ -233,7 +233,7 @@ To do each function seperately:
 To set up a cron job:
 
 - $ crontab -e
-- \*/20 \* \* \* \* cd /home/johnsnow/Scumblr && /home/johnsnow/.rbenv/shims/rake sync_all
+- \*/20 \* \* \* \* cd /home/johnsnow/Scumblr && /home/johnsnow/.rbenv/shims/rake run_tasks
 
 To run rake commands as root (not required), You will need to symlink rake to /usr/bin.
 
